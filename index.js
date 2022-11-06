@@ -14,32 +14,93 @@ const team = [];
 
 // manager question prompts via inquirer
 const addManager = () => {
-    inquirer.prompt ([
+    return inquirer.prompt ([
         {
             type: 'input',
-            name: 'managerName',
+            name: 'name',
             message: 'Who is the manager of the team?'
         },
         {
             type: 'input',
-            name: 'managerId',
+            name: 'id',
             message: "What is the manager's ID?"
         },
         {
             type: 'input',
-            name: 'managerEmail',
+            name: 'email',
             message: "What is the manager's email address?"
         },
         {
             type: 'input',
-            name: 'managerOfficeNumber',
+            name: 'officeNumber',
             message: "What is the manager's office number?"
         },
     ])
     .then(managerInput => {
-        const { managerName, managerId, managerEmail, managerOfficeNumber } = managerInput;
-        const Manager = new manager (managerName, managerId, managerEmail, managerOfficeNumber);
+        const { name, id, email, officeNumber } = managerInput;
+        const Manager = new manager (name, id, email, officeNumber);
         team.push(Manager);
+    })
+};
+
+// question prompts for employees via inquirer
+const addEmployee = () => {
+    return inquirer.prompt ([
+        {
+            type: 'list',
+            name: 'job',
+            message: "What is the employee's job?",
+            choices: ['Engineer', 'Intern']
+        },
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the employee's name?"
+        },
+        {
+            type: 'input',
+            name: 'id',
+            message: "What is the employee's ID?"
+        },
+        {
+            type: 'input',
+            name: 'email',
+            message: "What is the employee's email address?"
+        },
+        {
+            type: 'input',
+            name: 'github',
+            message: "What is the employee's Github username?",
+            when: (input) => input.job === "Engineer"
+        },
+        {
+            type: 'input',
+            name: 'school',
+            message: "What school does the employee attend?",
+            when: (input) => input.job === "Intern"
+        },
+        {
+            type: 'confirm',
+            name: 'confirmEmployee', 
+            message: 'Do you need to add another employee?',
+            default: false
+        }
+    ])
+
+    .then(employeeData => {
+        let { name, id, email, job, github, school, confirmEmployee } = employeeData;
+        let employee;
+        if (job === "Engineer") {
+            employee = new engineer (name, id, email, github);
+        } else if (job === "Intern") {
+            employee = new intern (name, id, email, school);
+        }
+        team.push(employee);
+        if (confirmEmployee) {
+            return addEmployee(team);
+        } else {
+            return team;
+        }
     })
 };
 
@@ -57,11 +118,12 @@ const writeFile = data => {
 
 // calls on the question prompts
 addManager()
-.then(team => {
-    return generatePage(team);
-})
-.then(HTML => {
-    return writeFile(HTML);
-});
+    .then(addEmployee)
+    .then(team => {
+        return generatePage(team);
+    })
+    .then(HTML => {
+        return writeFile(HTML);
+    });
 
 
