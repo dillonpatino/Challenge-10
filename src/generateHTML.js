@@ -1,11 +1,20 @@
-// generate manager card
-const generateManager = manager => {
-    return`
-    <div class="col-4 mt-4">
-        <div class="card h-110">
-            <div class="card-title">
-                <h2>${manager.name}</h2>
+// generating the team
+const generateMyTeam = myTeam => {
+
+    // generating the manager card
+    const generateManager = manager => {
+        return `
+        <div class="card employee-card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title">${manager.getName()}</h2>
+                <h3 class="card-title"><i class="fas fa-mug-hot mr-2"></i>${manager.getRole()}</h3>
             </div>
-        </div>
-    </div>`
-};
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">ID: ${manager.getId()}</li>
+                    <li class="list-group-item">Email: <a href="mailto:${manager.getEmail()}">${manager.getEmail()}</a></li>
+                    <li class="list-group-item">Office number: ${manager.getOfficeNumber()}</li>
+                </ul>
+            </div>
+        </div>`;
+    };
